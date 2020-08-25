@@ -41,6 +41,11 @@ const tests2 = [
     "the minimum number is still observed",
     "$6$rounds=1000$roundstoolow$kUMsbe306n21p9R.FRkW3IGn.S9NPN0x50YhH1xhLsPuWGsUSklZt58jaTfF4ZEQpyUNGc0dqbpBYYBaHHrsX.",
   ],
+  [
+    "$6$DtcywVR7ckEhgw==",
+    "UtkPUzr5mP1n7kmOkMDT+2ug",
+    "$6$DtcywVR7ckEhgw==$xwe8zOY57d6axWzlO7MH8BbwL8l5IePI5KwZntuWsTat30NsYx4N6fU6Kxrk8L27Avy.r681qgaHixszyKojg1",
+  ],
 ]
 
 describe("Encryption", () => {
@@ -203,9 +208,9 @@ describe("Encryption", () => {
 
   it("Should throw an exception when the rounds-part of the salt is malformed", () => {
     const data = [
-      "$6$round=5000$salt",
+      "$6$rounds#5000$salt",
       "pass",
-      "$6$round=5000$salt$this is moot because the salt is invalid",
+      "$6$rounds#5000$salt$this is moot because the salt is invalid",
     ]
     expect(() => encrypt(data[1], data[0])).to.throw("Invalid salt string")
     expect(() => verify(data[1], data[2])).to.throw("Invalid salt string")
@@ -245,4 +250,19 @@ describe("Encryption", () => {
   //   expect(compute).to.equal(hash);
   //   expect(verify(plaintext, hash)).to.be.true;
   // });
+
+  it("Should allow equals signs", () => {
+    const data = tests2[7]
+    const compute = encrypt(data[1], data[0])
+    expect(compute).to.equal(data[2])
+    expect(verify(data[1], data[2])).to.be.true
+  })
+
+  it("Should allow plus signs", () => {
+    const plaintext = "Plaintext password"
+    const salt = "$6$asdf+asdf"
+    // this should not throw an exception
+    const compute = encrypt(plaintext, salt)
+    expect(verify(plaintext, compute)).to.be.true
+  })
 })

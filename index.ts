@@ -143,7 +143,7 @@ function parseSalt(salt?: string): Conf {
   // sanity-check saltString
   conf.saltString = conf.saltString.substr(0, 16)
 
-  if (conf.saltString.match("[^./0-9A-Za-z]")) {
+  if (conf.saltString.match("[^./0-9A-Za-z=+]")) {
     throw new Error("Invalid salt string")
   }
 
@@ -188,7 +188,7 @@ function generateDigestA(plaintext: string, conf: Conf): Buffer {
     .toString(2)
     .split("")
     .reverse()
-    .forEach(num => {
+    .forEach((num) => {
       hashA.update(num === "0" ? plaintext : digestB)
     })
 
